@@ -34,8 +34,13 @@ testset3 = do
             runeval Map.empty "\\x y z . (x & y) | (x & z) | (y & z) $ True False False" `shouldBe` (Literal (XBool False))   
         it "\\x y z . (\\a.a+1 $ x) * (\\a.a+2 $ y) * (\\a.a+3 $ z) $ 0 0 0  evaluates to 6" $
             runeval Map.empty "\\x y z . (\\a.a+1 $ x) * (\\a.a+2 $ y) * (\\a.a+3 $ z) $ 0 0 0" `shouldBe` (Literal (XInt 6))
-        it "\\x y z . 10 $ 500 250 False evaluates to 500" $
+        it "\\x y z . 10 $ 500 250 False evaluates to 10" $
             runeval Map.empty "\\x y z . 10 $ 500 250 20" `shouldBe` (Literal (XInt 10))
+        it "'(\\x y z . x y z $) (\\x . x x $) (\\x . x $) x' must evaluate to x" $
+            runeval Map.empty "(\\x y z . x y z $) (\\x . x x $) (\\x . x $) x" `shouldBe` (Var "x")
+        it "'\\x.\\y.y$$ ((\\x.x$) (\\y.y$))' must evaluate to \\y.y" $
+            runeval Map.empty "\\x.\\y.y$$ ((\\x.x$) (\\y.y$))" `shouldBe` (Abs "y" (Var "y"))
+        
 
 test :: IO()
 test = do

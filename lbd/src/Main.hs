@@ -19,11 +19,11 @@ run env = do
       putStrLn (show res)
       case res of
         Let a b -> do
-           putStrLn (show res ++ "  yeah")
+    --       putStrLn (show res ++ "  yeah")
            run (Map.insert a b env)
         Var "Error" -> putStrLn "this is shit"
         _ -> do
-          putStrLn (show res)
+   --       putStrLn (show res)
           run env
 
 
