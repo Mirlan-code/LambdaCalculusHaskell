@@ -3,26 +3,30 @@ C:\Users\Hussain\Desktop\lbd\lbd\README.md:
   size: 6
   modtime: 1583811565
 C:\Users\Hussain\Desktop\lbd\lbd\src\Testing.hs:
-  hash: a9cf5f5147fe4ad40ba7d57c7b540d7580d998aeea198b6a992aa197a660cdb3
-  size: 1782
-  modtime: 1584418952
+  hash: ff40ece55ece5bb0bb95b67026e8dd503fe7d9fdd9d3164273f19f626b377f87
+  size: 2192
+  modtime: 1589074465
+C:\Users\Hussain\Desktop\lbd\lbd\src\Check.hs:
+  hash: 4378130b2da11edf00366315594d2a286574a99106004e425460c498a1bf8104
+  size: 1299
+  modtime: 1589074517
 C:\Users\Hussain\Desktop\lbd\lbd\src\Main.hs:
-  hash: d4a36bfda148155c77295a6833e2fa7e3bef1dce3baedd138eb1d3adfc545de0
-  size: 731
-  modtime: 1584418950
+  hash: a1cf764c21c1c2fa5c2e70c94eff04b95324fa5deab4fa3f430e763f6d333396
+  size: 735
+  modtime: 1584450196
 C:\Users\Hussain\Desktop\lbd\lbd\src\OutputMisc.hs:
-  hash: 946f0b0ea889d37594fb51f750bb5cabd161fde2637c7e32feb1e5448b8d73a2
-  size: 782
-  modtime: 1584418951
+  hash: 40008defddf9a4c05edeffb1f5869d4f230ef75bfc386efc2198ed71e0e14eb7
+  size: 932
+  modtime: 1589051266
 C:\Users\Hussain\Desktop\lbd\lbd\lbd.cabal:
-  hash: fef9397a032d1c0b287a2b415cabb5d6c0468ac1a6a7404e86b667b6df98b806
-  size: 805
-  modtime: 1584418556
+  hash: 58dabbf36f7c2c379a2de75cfdb1c531e36fab581528fe46dcbc59a3b1111236
+  size: 811
+  modtime: 1589072078
 C:\Users\Hussain\Desktop\lbd\lbd\src\Parser.hs:
-  hash: 57d130a7c01cbe2236c654b180550a7c0d503b92400d1c00fdec0008799c4334
-  size: 3371
-  modtime: 1584418953
+  hash: 69717927f09f805e6abca115f34240441b09fac7d5550c74bee4d5f17b4809d9
+  size: 4080
+  modtime: 1589074496
 C:\Users\Hussain\Desktop\lbd\lbd\src\LambdaCalc.hs:
-  hash: 244532a715ecbe006c217c20159aa7249023480e76ae665e7685d16be086aaf0
-  size: 3795
-  modtime: 1584418953
+  hash: 71bd164c725b45cfbcc6e27bb3fcd3e06e6dbb304a7f274a9c8dab9cdff6027c
+  size: 3894
+  modtime: 1589051233

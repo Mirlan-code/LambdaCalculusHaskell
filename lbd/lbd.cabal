@@ -15,7 +15,7 @@ extra-source-files:  README.md
 
 executable lbd
   hs-source-dirs:      src
-  other-modules: 	   LambdaCalc,Parser,OutputMisc,Testing
+  other-modules: 	   LambdaCalc,Parser,OutputMisc,Testing,Check
   main-is:             Main.hs
 					
   default-language:    Haskell2010
