@@ -29,12 +29,12 @@ version :: Version
 version = Version [0,1,0,0] []
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 
-bindir     = "C:\\Users\\Hussain\\Desktop\\lbd\\.stack-work\\install\\ccb4ddfe\\bin"
-libdir     = "C:\\Users\\Hussain\\Desktop\\lbd\\.stack-work\\install\\ccb4ddfe\\lib\\x86_64-windows-ghc-8.8.2\\lbd-0.1.0.0-7x5jEV8DBR66ZKWFALuZ0i-lbd"
-dynlibdir  = "C:\\Users\\Hussain\\Desktop\\lbd\\.stack-work\\install\\ccb4ddfe\\lib\\x86_64-windows-ghc-8.8.2"
-datadir    = "C:\\Users\\Hussain\\Desktop\\lbd\\.stack-work\\install\\ccb4ddfe\\share\\x86_64-windows-ghc-8.8.2\\lbd-0.1.0.0"
-libexecdir = "C:\\Users\\Hussain\\Desktop\\lbd\\.stack-work\\install\\ccb4ddfe\\libexec\\x86_64-windows-ghc-8.8.2\\lbd-0.1.0.0"
-sysconfdir = "C:\\Users\\Hussain\\Desktop\\lbd\\.stack-work\\install\\ccb4ddfe\\etc"
+bindir     = "C:\\Users\\Hussain\\Desktop\\lbd\\lbd\\.stack-work\\install\\ccb4ddfe\\bin"
+libdir     = "C:\\Users\\Hussain\\Desktop\\lbd\\lbd\\.stack-work\\install\\ccb4ddfe\\lib\\x86_64-windows-ghc-8.8.2\\lbd-0.1.0.0-7x5jEV8DBR66ZKWFALuZ0i-lbd"
+dynlibdir  = "C:\\Users\\Hussain\\Desktop\\lbd\\lbd\\.stack-work\\install\\ccb4ddfe\\lib\\x86_64-windows-ghc-8.8.2"
+datadir    = "C:\\Users\\Hussain\\Desktop\\lbd\\lbd\\.stack-work\\install\\ccb4ddfe\\share\\x86_64-windows-ghc-8.8.2\\lbd-0.1.0.0"
+libexecdir = "C:\\Users\\Hussain\\Desktop\\lbd\\lbd\\.stack-work\\install\\ccb4ddfe\\libexec\\x86_64-windows-ghc-8.8.2\\lbd-0.1.0.0"
+sysconfdir = "C:\\Users\\Hussain\\Desktop\\lbd\\lbd\\.stack-work\\install\\ccb4ddfe\\etc"
 
 getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: IO FilePath
 getBinDir = catchIO (getEnv "lbd_bindir") (\_ -> return bindir)

@@ -34,7 +34,14 @@ testset2 = do
             expr `shouldSucceedOn` ( T.pack "\\x : Int y : Int . if x > y ? x : y $")
         it "should fail on arithmetic condition" $
             expr `shouldFailOn` (T.pack "\\x : Int . if x + 3 ? x + 5 : x - 1 $")
+        it "should parse nested if" $
+            expr `shouldSucceedOn` ( T.pack "\\x : Int . if x = 1 ? 100 : (if x = 2 ? 200 : 900) $")
+        it "type parser" $
+            tTypeParser `shouldSucceedOn` (T.pack "Int -> Int -> Int")
+        it "higher order function #1" $
+            expr `shouldSucceedOn` (T.pack "(\\x : Int -> Int . \\y : Int -> Int . x y $ $) (\\x : Int . x + 1 $) (\\x : Int . x * 2 $) 5")
         
+
 
 testset3 = do
     describe "test type checking" $ do
@@ -48,7 +55,16 @@ testset3 = do
             checktest "\\x : Int . x + 1 $ True" `shouldBe` (Left $ TypeMismatch TBool TInt)
         it "and beteween 2 integers should result in error" $
             checktest "\\x : Int y : Int . x & y $ 4 5" `shouldBe` (Left $ TypeMismatch TInt TBool)
-
+        it "if with 2 different return clauses" $
+            checktest "\\x : Int . if x = 5 ? x + 1 : True $ 5" `shouldBe` (Left $ TypeMismatch TInt TBool)
+        it "if with 2 normal clauses" $
+            checktest "\\x : Int . \\ y : Int . if x = y ? True : False $ $ " `shouldBe` (Right $ TArr TInt (TArr TInt TBool))
+        it "higher order function  #1-1" $
+            checktest "(\\x : Int -> Int . \\y : Int -> Int . x y $ $)" `shouldBe` ( Right (TArr (TArr TInt TInt) (TArr (TArr TInt TInt) (TArr TInt TInt)) ) )
+        it "higher order function  #1-2" $
+            checktest "(\\x : Int -> Int . \\y : Int -> Int . x y $ $)  (\\x : Int . x + 1 $)" `shouldBe` ( Right  (TArr (TArr TInt TInt) (TArr TInt TInt))  )
+        it "higher order function  #1-3" $
+            checktest "(\\x : Int -> Int . \\y : Int -> Int . x y $ $) (\\x : Int . x + 1 $) (\\x : Int . x * 2 $)" `shouldBe` ( Right  (TArr TInt TInt) )
     
 
 
@@ -64,6 +80,21 @@ testset4 = do
             runeval Map.empty "\\x : Int y : Int . if x > y ? x : y $ 3 5" `shouldBe` (Literal (XInt 5))
         it "equality test" $
             runeval Map.empty "\\x : Int y : Int . if x = y ? True : False $ 3 3" `shouldBe` (Literal (XBool True))
+        it "factorial recursion" $
+            runeval Map.empty "(rec \\f : Int -> Int . \\n : Int . if n=0 ? 1 : n * (f (n-1)) $ $) 5" `shouldBe` (Literal (XInt 120))
+        it "nested if test1" $
+            runeval Map.empty "\\x : Int . if x = 1 ? 100 : (if x = 2 ? 200 : 900) $ 100" `shouldBe` (Literal (XInt 900))
+        it "nested if test2" $
+            runeval Map.empty "\\x : Int . if x = 1 ? 100 : (if x = 2 ? 200 : 900) $ 2" `shouldBe` (Literal (XInt 200))
+        it "fibonacci test" $
+            runeval Map.empty "(rec \\f : Int -> Int . \\n : Int . if n=0 ? 1 : (if n = 1 ? 1 : (f (n-1)) + (f (n-2))) $ $) 5" `shouldBe` (Literal (XInt 8))
+        it "pow test" $
+            runeval Map.empty "(rec \\f : Int -> Int -> Int . \\n : Int . \\ m : Int . if m=1 ? n : n * (f n (m-1))  $ $ $) 2 3" `shouldBe` (Literal (XInt 8))
+        it "higher order function eval #1" $
+            runeval Map.empty "(\\x : Int -> Int . \\y : Int -> Int . x y $ $) (\\x : Int . x + 1 $) (\\x : Int . x * 2 $) 5" `shouldBe` (Literal (XInt 11))
+        
+
+        
     --    it "'(\\x : Int y : Int z : Int . x y z $) (\\x . x x $) (\\x . x $) x' must evaluate to x" $
     --        runeval Map.empty "(\\x y z . x y z $) (\\x . x x $) (\\x . x $) x" `shouldBe` (Var "x")
      --   it "'\\x.\\y.y$$ ((\\x.x$) (\\y.y$))' must evaluate to \\y.y" $
@@ -77,3 +108,4 @@ test = do
     hspec testset2
     hspec testset3
     hspec testset4
+

@@ -19,7 +19,8 @@ data Expr
   | Literal Atom -- single basic data type
   | Operation Expr Op Expr -- f + g .. etc
   | Let Name Expr -- let statement
-  | IfElse Expr Expr Expr
+  | IfElse Expr Expr Expr -- if else
+  | Fix Expr -- fixed point combinator
   deriving (Eq)
 
 
@@ -32,6 +33,7 @@ data Type =
   TInt 
   | TBool 
   | TArr Type Type
+  | Star
   deriving (Eq)
 
 -- a function to get the free variables from single expression as a list
@@ -41,6 +43,8 @@ freeVars (App f g) = freeVars f ++ freeVars g
 freeVars (Abs x t fx) = filter (/=x) . freeVars $ fx
 freeVars (Literal atom) = []
 freeVars (Operation f _ g) = freeVars f ++ freeVars g
+freeVars (IfElse c pos neg) = freeVars c ++ freeVars pos ++ freeVars neg
+freeVars (Fix f) = freeVars f
 
 
 -- a function that takes all definitions in global scope and substitue it
@@ -55,6 +59,7 @@ subGlobals env (Literal atom) = Literal atom
 subGlobals env (Operation f op g) = Operation (subGlobals env f) op (subGlobals env g)
 subGlobals env (Let x fx) = Let x (subGlobals env fx)
 subGlobals env (IfElse c pos neg) = IfElse (subGlobals env c) (subGlobals env pos) (subGlobals env neg)
+subGlobals env (Fix expr) = Fix (subGlobals env expr)
 
 
 -- a function that takes a variable and lambda expression and another expression bound to the variable
@@ -81,6 +86,8 @@ sub x (Operation f op g) boundExpression =
 sub x (IfElse c pos neg) boundExpression = 
     IfElse (sub x c boundExpression) (sub x pos boundExpression) (sub x neg boundExpression)
 
+sub x expression@(Fix expr) boundExpression = expression
+
 -- a function that reduces operations on atoms to single atom
 calc :: Expr -> Op -> Expr -> Expr
 
@@ -102,13 +109,25 @@ eval expression@(Var _) = expression
 eval (Abs x t fx) = Abs x t (eval fx)
 eval (App f g) = beta (eval f) (eval g)
 eval (Literal atom) = Literal atom
-eval (Operation e1 op e2) = calc (eval e1) op (eval e2)
+eval (Operation e1 op e2) = 
+  calc (eval e1) op (eval e2)
+
 eval (Let x fx) = Let x (eval fx)
 eval self@(IfElse c pos neg) = case (eval c) of
   (Literal (XBool True)) -> eval pos
   (Literal (XBool False)) -> eval neg
   _ -> self
   
+
+
+----------
+--eval (Fix _) = (Abs ("x") TInt (Var "x"))
+eval (Fix expression@(Abs x t body)) = eval (sub x body (Fix expression))
+eval (Fix expr) = case (eval expr) of
+  ( Literal _ ) -> (eval expr)
+  _ -> (Fix (eval expr))
+----------
+
 
 
 --reduction rules:
@@ -119,6 +138,11 @@ beta (App e1 e2) e3 = App (beta e1 e2) e3
 beta (Abs x t fx) y = eval (sub x fx' y)
   where
     fx' = alpha (freeVars y) fx
+
+beta  (Operation (Abs x t fx) op rest) e2 = beta (Abs x t (Operation fx op rest)) e2
+--beta (Operation ((Abs x t fx) op rest)) e2 = 
+--beta e1 (Operation $ (Abs x t fx) op rest)  = beta (Abs x t (Operation fx op rest)) e1
+
 beta _x _y = App _x _y
 
 -- alpha reduction

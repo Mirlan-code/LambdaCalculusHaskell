@@ -36,7 +36,7 @@ globalBinder = (many' space) *> (many1 (satisfy (isAlpha)))
 
 -- a parser that parses the word given
 rawstring :: String -> Parser String
-rawstring str = (many' space) *> fmap T.unpack ( string ( T.pack str ) )
+rawstring str = (many' space) *> fmap T.unpack ( string ( T.pack str ) ) 
 
 -- operations
 binop :: Parser Op
@@ -78,7 +78,7 @@ term = single  <|> (parensed expr)
 
 -- stuff that can be applied
 applicable :: Parser Expr
-applicable =  arith <|> lambdaExpr 
+applicable =   recursiveExpression <|> arith <|> lambdaExpr
 
 
 foldapp :: [Expr] -> Expr
@@ -115,7 +115,7 @@ tBoolParser = fmap (\x -> TBool) ( (many' space) *> (rawstring  "Bool"))
 
 -- complete type parser
 tTypeParser :: Parser Type
-tTypeParser = tAtomParser <|> ( (pure TArr) <*> tAtomParser <*  (rawstring "->") *> tTypeParser) 
+tTypeParser = ( (pure TArr) <*> tAtomParser <*> ( (rawstring "->") *> tTypeParser) ) <|> tAtomParser 
 
 -- let statement parser
 letParser :: Parser Expr
@@ -143,6 +143,16 @@ ifParser = do
 conditionParser :: Parser Expr
 conditionParser = (pure Operation) <*> succapp <*> compareop <*> succapp
 
+recursiveBody :: Parser Expr
+recursiveBody = do
+    rawstring "rec"
+    many1 space
+    expression <- expr
+    return (Fix expression)
+
+recursiveExpression :: Parser Expr
+recursiveExpression = parensed recursiveBody
+
 expr :: Parser Expr
 expr = ifParser <|> succapp
 
@@ -165,17 +175,30 @@ runeval env x = case parseOnly globalParser (T.pack x) of
 -- string -> int -> guy
 -- int -> guy <*> Parser
 
+typeChecker :: String -> TEnv -> Either TypeError Type
+typeChecker x tenv = case parseOnly globalParser (T.pack x) of
+    (Right res) -> checkType tenv res
+    _ -> Left $ OutOfScope "parse error"    
+
+checktest :: String -> Either TypeError Type
+checktest str = typeChecker str Map.empty 
+
 parsey :: String -> Expr
-parsey x = case parseOnly globalParser (T.pack x) of
+parsey x = case parseOnly expr (T.pack x) of
     (Right res) ->  res
     _ -> Var "Error"  
 
-checktest :: String -> Either TypeError Type
-checktest x = case parseOnly globalParser (T.pack x) of
-    (Right res) -> checkType [] res
-    _ -> Left $ OutOfScope "parse error"    
 
-jj  = checktest "\\x : Int . x + 1 $ True"
+
+rectest = "(rec \\f : Int . \\n : Int . if n=0 ? 1 : (if n = 1 ? 1 :  (f (n-1)) + (f (n-2)) ) $ $) 5"
+jj  = parsey rectest
+uu = eval jj
+
 kk = parsey "\\x : Int . \\y : Int . x + y $ $ 3 "
 
-qq = parseOnly ifParser $ T.pack "if x = 10 ? x + 1 : x + 5"
+qq = runeval Map.empty "(\\x : Int -> Int . \\y : Int -> Int . x y $ $) (\\z : Int . z + 1 $) (\\z : Int . z * 2 $)"
+qqq = runeval Map.empty "(\\x : Int -> Int . \\y : Int -> Int . x y $ $)  (\\z : Int . z + 1 $) (\\z : Int . z * 2 $)"
+
+nn = parsey "(\\x : Int -> Int . \\y : Int -> Int . x y $ $)" 
+
+oo = checktest "(rec \\f : Int -> Int -> Int . \\n : Int . \\ m : Int . if m=1 ? n : n * (f n (m-1))  $ $ $)" 

@@ -13,16 +13,19 @@ instance Strable Expr where
     str (Operation f op g) = str f ++ str op  ++ str g 
     str (Let x fx) = x ++ "=" ++ " " ++ str fx   
     str (IfElse c a b) = show c ++ " ? " ++ show a ++ " : " ++ show b
-
+    str (Fix expr) = "fix " ++ show expr
 instance Show Type where
     show TInt = "Int"
     show TBool = "Bool"
-    show (TArr x y) = show x ++ "->" ++ show y
+    --show (TArr x y) =  show x  ++ "->" ++   show y 
+    show Star = "*"
+    show (TArr x y) = "(" ++ show x ++ ")" ++ "->" ++  "(" ++ show y  ++ ")"
 
 instance Show TypeError where
     show (TypeMismatch bad good) = "Expected type " ++ (show good)  ++ " but " ++ (show bad) ++ " was given"
     show (NotFunction t) = "Not a function"
     show (OutOfScope name) = name ++ " is out of scope"
+    show (Misc xx) = show xx
 
 instance Strable Atom where
     str (XInt x) = show x 
