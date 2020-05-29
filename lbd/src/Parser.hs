@@ -215,3 +215,18 @@ oo = checktest "(rec \\f : Int -> Int -> Int . \\n : Int . \\ m : Int . if m=1 ?
 
 
 \x : Int . 123 + x $ 4
+
+let F = (\x : Int . x * x $);
+let L = (\x : Int -> Int .
+let M = (\x : Int -> Int . \y : Int . x(y) $ $);
+
+let CONS = (\head : Int tail : (Int -> (Int -> Int -> Int) -> Int) x : Int f : Int -> Int -> Int . f head (tail x f) $ $ $ $);
+let CONS = (\head : Int . \tail : (Int -> (Int -> Int -> Int) -> Int) . \x : Int . \f : (Int -> Int -> Int) . \f head(tail x f) $ $ $ $);
+
+
+let TEST = (\head : Int  tail : Int -> (Int -> Int -> Int) -> Int  x : Int    f : Int -> Int -> Int . 1 $);
+let TEST = (\x : Int . \y : (Int -> Int) -> Int . 1 $ $);
+
+let KEK = (\x : Int y : Int -> (Int -> In))
+
+M F 2
