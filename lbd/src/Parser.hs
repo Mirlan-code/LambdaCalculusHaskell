@@ -27,8 +27,14 @@ preclean x = case x of
     (' ':' ':xs) -> preclean (' ':xs)
     (x : xs) -> preclean (x : xs)
 
-singleChar :: Char -> Parser Char
-singleChar x = (many' space) *> (char x)  <* (many' space)
+--singleChar :: Char -> Parser Char
+--singleChar x = (many' space) *> (char x)  <* (many' space)
+
+singleChar c = do
+    many' space
+    ret <- char c
+    many' space
+    return ret
 
 -- a function to read words of big letters
 globalBinder :: Parser String
@@ -66,8 +72,10 @@ single :: Parser Expr
 single = boolean <|> var <|> number
 
 -- a function that surrounds a given parser with ( )
-parensed :: Parser Expr -> Parser Expr
+parensed :: Parser a -> Parser a
 parensed _parser = ((singleChar '(') *> _parser <* (singleChar ')'))
+
+
 
 -- arithmetic parser
 arith :: Parser Expr
@@ -76,9 +84,10 @@ arith =  ( (pure Operation) <*> term <*> binop <*> arith ) <|> term
 term :: Parser Expr
 term = single  <|> (parensed expr)
 
+
 -- stuff that can be applied
 applicable :: Parser Expr
-applicable =   recursiveExpression <|> arith <|> lambdaExpr
+applicable =   recursiveExpression <|> arith <|> lambdaExpr 
 
 
 foldapp :: [Expr] -> Expr
@@ -103,7 +112,7 @@ predec c p = (rawstring c *> p)
 
 --single type token parser
 tAtomParser :: Parser Type
-tAtomParser = tIntParser <|> tBoolParser
+tAtomParser = (parensed  tTypeParser) <|> tIntParser <|> tBoolParser
 
 -- int type pasrer
 tIntParser :: Parser Type
@@ -188,7 +197,8 @@ parsey x = case parseOnly expr (T.pack x) of
     (Right res) ->  res
     _ -> Var "Error"  
 
-
+-- \x : Int y : Int . if x + y > 10 ? True : False $ 4 7
+-- (rec \f : Int -> Int . \n : Int . if n=0 ? 1 : (if n = 1 ? 1 : (f (n-1)) + (f (n-2))) $ $) 5
 
 rectest = "(rec \\f : Int . \\n : Int . if n=0 ? 1 : (if n = 1 ? 1 :  (f (n-1)) + (f (n-2)) ) $ $) 5"
 jj  = parsey rectest
@@ -202,3 +212,6 @@ qqq = runeval Map.empty "(\\x : Int -> Int . \\y : Int -> Int . x y $ $)  (\\z :
 nn = parsey "(\\x : Int -> Int . \\y : Int -> Int . x y $ $)" 
 
 oo = checktest "(rec \\f : Int -> Int -> Int . \\n : Int . \\ m : Int . if m=1 ? n : n * (f n (m-1))  $ $ $)" 
+
+
+\x : Int . 123 + x $ 4
